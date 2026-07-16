@@ -1,6 +1,6 @@
 # Hướng dẫn tạo API CRUD (DDD + CQRS Architecture)
 
-Tài liệu này là "Kim chỉ nam" để bạn xây dựng các tính năng mới cho dự án `platform` sao cho đồng bộ hoàn toàn với cấu trúc của dự án `store`.
+Tài liệu này là "Kim chỉ nam" để bạn xây dựng các tính năng mới cho dự án `wedding` sao cho đồng bộ hoàn toàn với cấu trúc của dự án `store`.
 
 ---
 

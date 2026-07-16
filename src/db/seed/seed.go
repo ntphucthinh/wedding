@@ -28,11 +28,21 @@ func main() {
 		dbName := os.Getenv("DB_NAME")
 
 		// Fallback nếu chạy bên ngoài Docker hoặc thiếu biến lẻ
-		if user == "" { user = "root" }
-		if pass == "" { pass = "root" }
-		if host == "" { host = "localhost" } // Nếu chạy từ host thì trỏ localhost
-		if dbPort == "" { dbPort = "3309" }
-		if dbName == "" { dbName = "platform_db" }
+		if user == "" {
+			user = "root"
+		}
+		if pass == "" {
+			pass = "root"
+		}
+		if host == "" {
+			host = "localhost"
+		} // Nếu chạy từ host thì trỏ localhost
+		if dbPort == "" {
+			dbPort = "3309"
+		}
+		if dbName == "" {
+			dbName = "wedding_db"
+		}
 
 		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, pass, host, dbPort, dbName)
 	}

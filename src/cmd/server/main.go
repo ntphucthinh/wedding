@@ -35,13 +35,13 @@ func main() {
 			pass = "root"
 		}
 		if host == "" {
-			host = "platform-db"
+			host = "wedding-db"
 		}
 		if dbPort == "" {
 			dbPort = "3306"
 		}
 		if dbName == "" {
-			dbName = "platform_db"
+			dbName = "wedding_db"
 		}
 
 		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, pass, host, dbPort, dbName)

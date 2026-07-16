@@ -1,17 +1,17 @@
 version: "3.8"
 
 networks:
-  platform-network:
-    name: platform-network
+  wedding-network:
+    name: wedding-network
 
 services:
-  platform-db:
+  wedding-db:
     build:
       context: .
       dockerfile: dockerfiles/mysql/Dockerfile
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: platform_db
+      MYSQL_DATABASE: wedding_db
     ports:
       - "3309:3306"
     volumes:
@@ -19,9 +19,9 @@ services:
       - ./dockerfiles/mysql/my.cnf:/etc/my.cnf
       - ./dockerfiles/mysql/init:/docker-entrypoint-initdb.d
     networks:
-      platform-network:
+      wedding-network:
         aliases:
-          - platform-db
+          - wedding-db
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -29,10 +29,10 @@ services:
       retries: 5
 
   # Go API Service
-  platform-api:
+  wedding-api:
     build:
       context: .
-      dockerfile: dockerfiles/go/platform/Dockerfile.go_local
+      dockerfile: dockerfiles/go/wedding/Dockerfile.go_local
     ports:
       - "8088:8080"
       - "3458:2345" # Port dành cho công cụ debug Delve
@@ -40,15 +40,15 @@ services:
       - ./src:/go/app
     tty: true
     depends_on:
-      platform-db:
+      wedding-db:
         condition: service_healthy
     networks:
-      platform-network:
+      wedding-network:
         aliases:
-          - backend.platform.internal
+          - backend.wedding.internal
 
   # Swagger UI Document
-  platform-swagger-ui:
+  wedding-swagger-ui:
     image: swaggerapi/swagger-ui
     ports:
       - "8098:8080"
@@ -57,34 +57,34 @@ services:
     volumes:
       - ./src/generated/openapi/openapi/openapi.yaml:/usr/share/nginx/html/openapi.yaml
     networks:
-      - platform-network
+      - wedding-network
 
   # HTTPS Proxy for API and Swagger UI
-  platform-https-proxy:
+  wedding-https-proxy:
     image: steveltn/https-portal:1
     ports:
       - "8085:80"
       - "8445:443"
     environment:
       STAGE: local
-      DOMAINS: "api.platform.internal -> http://platform-api:8080, swagger.platform.internal -> http://platform-swagger-ui:8080"
+      DOMAINS: "api.wedding.internal -> http://wedding-api:8080, swagger.wedding.internal -> http://wedding-swagger-ui:8080"
     networks:
-      - platform-network
+      - wedding-network
 
   # Node toolchain for OpenAPI code generation and misc frontend tasks
-  platform-node:
+  wedding-node:
     build:
       context: .
       dockerfile: dockerfiles/node/Dockerfile
     volumes:
-      - ./src/platform-openapitools.json:/app/platform-openapitools.json
+      - ./src/wedding-openapitools.json:/app/wedding-openapitools.json
       - ./src/openapi:/app/openapi
       - ./src/generated:/app/generated
     tty: true
     ports:
       - "3003:3001"
     networks:
-      - platform-network
+      - wedding-network
 
 volumes:
   db_data:

@@ -6,7 +6,7 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-  - url: https://api.platform.internal:8445
+  - url: https://api.wedding.internal:8445
     description: Local Development Server
 tags:
   - name: users
