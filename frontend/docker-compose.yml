@@ -1,0 +1,20 @@
+services:
+  wedding-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wedding-frontend
+    ports:
+      - "1301:1301"
+    environment:
+      VITE_HOST: 0.0.0.0
+      VITE_PORT: 1301
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - wedding-network
+
+networks:
+  wedding-network:
+    external: true
