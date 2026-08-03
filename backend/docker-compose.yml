@@ -38,6 +38,7 @@ services:
       - "3458:2345" # Port dành cho công cụ debug Delve
     volumes:
       - ./src:/go/app
+      - ./.air.toml:/go/app/.air.toml
     tty: true
     depends_on:
       wedding-db:
