@@ -10,9 +10,10 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
-	api "my-project/generated/api"
-	"my-project/internal/di"
-	"my-project/internal/pkg/app"
+	"wedding/internal/di"
+	"wedding/internal/interfaces/controller"
+	"wedding/internal/pkg/app"
+	"wedding/internal/usecases"
 )
 
 func main() {
@@ -54,9 +55,26 @@ func main() {
 
 	appHandler := di.InitializeHandler(db)
 
+	authUsecase := usecases.NewAuthUsecase(nil)
+	_ = authUsecase
+
+	// Register routes once through the app handler.
+	r := buildRouter(appHandler)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Printf("Server listening on :%s", port)
+	if err := r.Run(":" + port); err != nil {
+		log.Fatalf("server failed: %v", err)
+	}
+}
+
+func buildRouter(appHandler *controller.AppHandler) *gin.Engine {
 	r := gin.Default()
 
-	// CORS Middleware
 	r.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -71,18 +89,9 @@ func main() {
 		c.Next()
 	})
 
-	// Register generated routes to the gin router
-	api.RegisterHandlers(r, appHandler)
+	appHandler.RegisterRoutes(r)
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
-	log.Printf("Server listening on :%s", port)
-	if err := r.Run(":" + port); err != nil {
-		log.Fatalf("server failed: %v", err)
-	}
+	return r
 }
 
 func loadEnv() {

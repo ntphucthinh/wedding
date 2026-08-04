@@ -45,14 +45,14 @@ migrate-up:
 # 	air -c .air.toml
 
 air:
-	docker compose exec wedding-api air -c .air.toml
+	docker compose exec -e GOTOOLCHAIN=auto wedding-api air -c .air.toml
 
 lint:
 	docker compose exec wedding-api golangci-lint run
 
 wire:
-	docker compose exec wedding-api wire gen ./internal/di/wire.go
-	docker compose exec wedding-api wire gen -output_file_prefix=test_ ./internal/di/wire-test.go
+	docker compose exec -e GOTOOLCHAIN=auto wedding-api wire gen ./internal/di/wire.go
+	docker compose exec -e GOTOOLCHAIN=auto wedding-api wire gen -output_file_prefix=test_ ./internal/di/wire-test.go
 
 # OpenAPI Bundle
 bundle:
@@ -97,4 +97,4 @@ migrate-fresh:
 	@make migrate-up
 
 seeder:
-	docker compose exec wedding-api go run db/seed/seed.go
+	docker compose exec -e GOTOOLCHAIN=auto wedding-api go run db/seed/seed.go

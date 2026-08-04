@@ -8,26 +8,21 @@ import (
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+
+	"wedding/db/seed/seeder"
 )
 
-type User struct {
-	ID   uint64 `gorm:"primaryKey"`
-	Name string
-}
-
 func main() {
-	// Nạp env từ file .env.local trong src/
 	godotenv.Load(".env.local")
 
 	dsn := os.Getenv("DB_DSN")
 	if dsn == "" {
-		user := os.Getenv("DB_USER")
-		pass := os.Getenv("DB_PASS")
+		user := os.Getenv("DB_USERNAME")
+		pass := os.Getenv("DB_PASSWORD")
 		host := os.Getenv("DB_HOST")
 		dbPort := os.Getenv("DB_PORT")
-		dbName := os.Getenv("DB_NAME")
+		dbName := os.Getenv("DB_DATABASE")
 
-		// Fallback nếu chạy bên ngoài Docker hoặc thiếu biến lẻ
 		if user == "" {
 			user = "root"
 		}
@@ -36,7 +31,7 @@ func main() {
 		}
 		if host == "" {
 			host = "localhost"
-		} // Nếu chạy từ host thì trỏ localhost
+		}
 		if dbPort == "" {
 			dbPort = "3309"
 		}
@@ -52,19 +47,8 @@ func main() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 
-	fmt.Println("Seeding users...")
-	users := []User{
-		{Name: "User 1"},
-		{Name: "User 2"},
-		{Name: "User 3"},
-	}
-
-	for _, u := range users {
-		if err := db.Create(&u).Error; err != nil {
-			log.Printf("Could not seed user %s: %v", u.Name, err)
-		} else {
-			fmt.Printf("Seeded user: %s\n", u.Name)
-		}
+	if err := seeder.SeedAdminUser(db); err != nil {
+		log.Fatalf("seed failed: %v", err)
 	}
 
 	fmt.Println("Seeding completed successfully.")
